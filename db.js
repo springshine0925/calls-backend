@@ -1,28 +1,42 @@
-import { CloudSQLConnector } from '@google-cloud/cloud-sql-connector';
-import mysql from 'mysql2/promise'; // Assuming you are using MySQL
+const { Connector } = require('@google-cloud/cloud-sql-connector');
+const mysql = require('mysql2/promise');  // Using the promise-based interface of mysql2
 
-const connector = new CloudSQLConnector();
+
+
+const connector = new Connector();
 
 // Replace these variables with your instance connection details
-const instanceConnectionName = 'YOUR_PROJECT:YOUR_REGION:YOUR_INSTANCE';
-const dbUser = 'YOUR_DB_USER';
-const dbPassword = 'YOUR_DB_PASSWORD';
-const dbName = 'YOUR_DB_NAME';
+const instanceConnectionName = 'keen-boulder-410610:us-central1:calls';
+const dbUser = 'callsdb';
+const dbPassword = 'callsdb';
+const dbName = 'callsdb';
 
 async function createPool() {
-  const client = await connector.getClient({
-    instanceConnectionName,
-    dbUser,
-    dbPassword,
-    dbName,
-  });
+//   const client = await connector.getClient({
+//     instanceConnectionName,
+//     dbUser,
+//     dbPassword,
+//     dbName,
+//   });
 
-  return mysql.createPool({
-    user: dbUser,
-    password: dbPassword,
-    database: dbName,
-    stream: client,
+//   return mysql.createPool({
+//     user: dbUser,
+//     password: dbPassword,
+//     database: dbName,
+//     stream: client,
+//   });
+const clientOpts = await connector.getOptions({
+    instanceConnectionName: 'keen-boulder-410610:us-central1:calls',
+    ipType: 'PUBLIC',
   });
+  const pool = await mysql.createPool({
+    ...clientOpts,
+    user: 'callsdb',
+    password: 'callsdb',
+    database: 'callsdb',
+  });
+  const poolConnect = await pool.getConnection();
+  return poolConnect;
 }
 
 module.exports = { createPool };
