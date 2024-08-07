@@ -8,7 +8,7 @@ const app = express();
 app.use(bodyParser.json());
 // Automatically allow cross-origin requests
 app.use(cors({ origin: true }));
-const port = process.env.PORT || 80;
+const port = process.env.PORT || 8080;
 
 let pool;
 
