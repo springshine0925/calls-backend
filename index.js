@@ -56,8 +56,6 @@ app.get('/api/tutors', async (req, res) => {
   
   // 2. Get Suburbs
   app.get('/api/suburbs', async (req, res) => {
-    // const ids = req.query.ids.split(',');
-    // const queryStr = 'SELECT * FROM suburbs WHERE id IN (?)';
     try {
       const { ids } = req.query; 
       const suburbIds = ids ? ids.split(',').map(id => parseInt(id)) : [];
@@ -78,8 +76,6 @@ app.get('/api/tutors', async (req, res) => {
   
   // 3. Get Tutors in a Suburb
   app.get('/api/suburb_tutors', async (req, res) => {
-    // const { suburb_id } = req.query;
-    // const queryStr = 'SELECT * FROM tutors WHERE suburb_id = ?';
     try {
       const { suburbId } = req.query;
       const query = 'SELECT * FROM tutors WHERE suburbId = ?';
