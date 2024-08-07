@@ -1,7 +1,13 @@
 const express = require('express');
+const cors = require('cors');
+const axios = require('axios');
+const bodyParser = require('body-parser');
 const { createPool } = require('./db');
 
 const app = express();
+app.use(bodyParser.json());
+// Automatically allow cross-origin requests
+app.use(cors({ origin: true }));
 const port = process.env.PORT || 8080;
 
 let pool;
