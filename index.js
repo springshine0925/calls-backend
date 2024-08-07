@@ -23,8 +23,8 @@ createPool()
 
 app.get('/', async (req, res) => {
   try {
-    // const [rows] = await pool.query('SELECT NOW() AS now');
-    res.json({msg: "connect successfully!"});
+    const [rows] = await pool.query('SELECT NOW() AS now');
+    res.json({msg: "connect successfully!", rows});
   } catch (err) {
     console.error('Failed to query:', err);
     res.status(500).send('Failed to query database');
@@ -35,11 +35,23 @@ app.get('/', async (req, res) => {
 
 // 1. Get Tutors
 app.get('/api/tutors', async (req, res) => {
-    const ids = req.query.ids.split(','); // Expecting ids in a comma-separated format
-    const queryStr = 'SELECT * FROM tutors WHERE id IN (?)';
+    // const ids = req.query.ids.split(','); // Expecting ids in a comma-separated format
+    // const queryStr = 'SELECT * FROM tutors WHERE id IN (?)';
     try {
-      const tutors = await query(queryStr, [ids]);
-      res.json(tutors);
+      // const tutors = await query(queryStr, [ids]);
+      // res.json(tutors);
+        const { ids } = req.query; // Expecting a comma-separated list of IDs
+        const tutorIds = ids ? ids.split(',').map(id => parseInt(id)) : [];
+        let query = 'SELECT * FROM tutors';
+        const queryParams = [];
+
+        if (tutorIds.length) {
+            query += ' WHERE id IN (?)';
+            queryParams.push([tutorIds]);
+        }
+
+        const [rows] = await pool.query(query, queryParams);
+        res.json(rows);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
