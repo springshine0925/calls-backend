@@ -35,11 +35,8 @@ app.get('/', async (req, res) => {
 
 // 1. Get Tutors
 app.get('/api/tutors', async (req, res) => {
-    // const ids = req.query.ids.split(','); // Expecting ids in a comma-separated format
-    // const queryStr = 'SELECT * FROM tutors WHERE id IN (?)';
+   
     try {
-      // const tutors = await query(queryStr, [ids]);
-      // res.json(tutors);
         const { ids } = req.query; // Expecting a comma-separated list of IDs
         const tutorIds = ids ? ids.split(',').map(id => parseInt(id)) : [];
         let query = 'SELECT * FROM tutors';
@@ -59,11 +56,21 @@ app.get('/api/tutors', async (req, res) => {
   
   // 2. Get Suburbs
   app.get('/api/suburbs', async (req, res) => {
-    const ids = req.query.ids.split(',');
-    const queryStr = 'SELECT * FROM suburbs WHERE id IN (?)';
+    // const ids = req.query.ids.split(',');
+    // const queryStr = 'SELECT * FROM suburbs WHERE id IN (?)';
     try {
-      const suburbs = await query(queryStr, [ids]);
-      res.json(suburbs);
+      const { ids } = req.query; 
+      const suburbIds = ids ? ids.split(',').map(id => parseInt(id)) : [];
+      let query = 'SELECT * FROM suburbs';
+      const queryParams = [];
+
+      if (suburbIds.length) {
+          query += ' WHERE id IN (?)';
+          queryParams.push([suburbIds]);
+      }
+
+      const [rows] = await pool.query(query, queryParams);
+      res.json(rows);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -71,11 +78,13 @@ app.get('/api/tutors', async (req, res) => {
   
   // 3. Get Tutors in a Suburb
   app.get('/api/suburb_tutors', async (req, res) => {
-    const { suburb_id } = req.query;
-    const queryStr = 'SELECT * FROM tutors WHERE suburb_id = ?';
+    // const { suburb_id } = req.query;
+    // const queryStr = 'SELECT * FROM tutors WHERE suburb_id = ?';
     try {
-      const tutors = await query(queryStr, [suburb_id]);
-      res.json(tutors);
+      const { suburbId } = req.query;
+      const query = 'SELECT * FROM tutors WHERE suburbId = ?';
+      const [rows] = await pool.query(query, [suburbId]);
+      res.json(rows);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -83,65 +92,67 @@ app.get('/api/tutors', async (req, res) => {
   
   // 4. Get Tutor Properties
   app.get('/api/tutor_properties', async (req, res) => {
-    const { ids, properties } = req.query;
-    const idList = ids.split(',');
-    const propList = properties.split(',');
-    
-    // Build the query dynamically based on properties
-    const conditions = propList.map(prop => `property_name = '${prop}'`).join(' OR ');
-    const queryStr = `
-      SELECT t.id, t.name, tp.property_name, tp.property_value
-      FROM tutors t
-      JOIN tutor_properties tp ON t.id = tp.tutor_id
-      WHERE t.id IN (?) AND (${conditions})
-    `;
-    
     try {
-      const results = await query(queryStr, [idList]);
-      res.json(results);
-    } catch (error) {
+      const { ids, properties } = req.query; 
+      const tutorIds = ids ? ids.split(',').map(id => parseInt(id)) : [];
+      const selectedProperties = properties ? properties.split(',').join(', ') : '*';
+      let query = `SELECT ${selectedProperties} FROM tutors`;
+      const queryParams = [];
+
+      if (tutorIds.length) {
+          query += ' WHERE id IN (?)';
+          queryParams.push([tutorIds]);
+      }
+
+      const [rows] = await pool.query(query, queryParams);
+      res.json(rows);
+  } catch (error) {
       res.status(500).json({ error: error.message });
-    }
+  }
   });
   
   // POST Endpoints
   
   // 1. Add/Update Tutors
   app.post('/api/tutors', async (req, res) => {
-    const tutors = req.body;
     try {
-      for (const tutor of tutors) {
-        if (tutor.id) {
-          // Update existing tutor
-          await query('UPDATE tutors SET name = ?, suburb_id = ? WHERE id = ?', [tutor.name, tutor.suburb_id, tutor.id]);
-        } else {
-          // Insert new tutor
-          await query('INSERT INTO tutors (name, suburb_id) VALUES (?, ?)', [tutor.name, tutor.suburb_id]);
-        }
+      const newTutors = req.body; // Expecting an array of tutor objects
+      for (const newTutor of newTutors) {
+          const { id, name, suburbId, properties } = newTutor;
+          if (id) {
+              // Update existing tutor
+              await pool.query('UPDATE tutors SET name = ?, suburbId = ?, properties = ? WHERE id = ?', [name, suburbId, properties, id]);
+          } else {
+              // Add new tutor
+              await pool.query('INSERT INTO tutors (name, suburbId, properties) VALUES (?, ?, ?)', [name, suburbId, properties]);
+          }
       }
-      res.status(200).json({ message: 'Tutors added/updated successfully' });
-    } catch (error) {
+      const [updatedTutors] = await pool.query('SELECT * FROM tutors');
+      res.status(201).json(updatedTutors);
+  } catch (error) {
       res.status(500).json({ error: error.message });
-    }
+  }
   });
   
   // 2. Add/Update Suburbs
   app.post('/api/suburbs', async (req, res) => {
-    const suburbs = req.body;
     try {
-      for (const suburb of suburbs) {
-        if (suburb.id) {
-          // Update existing suburb
-          await query('UPDATE suburbs SET name = ? WHERE id = ?', [suburb.name, suburb.id]);
-        } else {
-          // Insert new suburb
-          await query('INSERT INTO suburbs (name) VALUES (?)', [suburb.name]);
-        }
+      const newSuburbs = req.body; // Expecting an array of suburb objects
+      for (const newSuburb of newSuburbs) {
+          const { id, name } = newSuburb;
+          if (id) {
+              // Update existing suburb
+              await pool.query('UPDATE suburbs SET name = ? WHERE id = ?', [name, id]);
+          } else {
+              // Add new suburb
+              await pool.query('INSERT INTO suburbs (name) VALUES (?)', [name]);
+          }
       }
-      res.status(200).json({ message: 'Suburbs added/updated successfully' });
-    } catch (error) {
+      const [updatedSuburbs] = await pool.query('SELECT * FROM suburbs');
+      res.status(201).json(updatedSuburbs);
+  } catch (error) {
       res.status(500).json({ error: error.message });
-    }
+  }
   });
 
 app.listen(port, () => {
