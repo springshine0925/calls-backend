@@ -147,7 +147,7 @@ app.get('/api/tutors', async (req, res) => {
 
         // Fetch and return the updated list of tutors
         const [updatedTutors] = await pool.query('SELECT * FROM tutors');
-        res.status(201).json(req.body);
+        res.status(201).json(updatedTutors);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
