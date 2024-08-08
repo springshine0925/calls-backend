@@ -111,7 +111,7 @@ app.get('/api/tutors', async (req, res) => {
   // 1. Add/Update Tutors
   app.post('/api/tutors', async (req, res) => {
     try {
-        const {
+        let {
             tutorId,
             name,
             regDate,
@@ -169,7 +169,7 @@ app.get('/api/tutors', async (req, res) => {
   // 2. Add/Update Suburbs
   app.post('/api/suburbs', async (req, res) => {
     try {
-      const { suburbId, suburbName, state, description, rank1, rank2, tutors1, tutors2, data1, featuredTutor, summaryHighlight, lessonNotes, imageUrl } = req.body; // Expecting an array of suburb objects
+      let { suburbId, suburbName, state, description, rank1, rank2, tutors1, tutors2, data1, featuredTutor, summaryHighlight, lessonNotes, imageUrl } = req.body; // Expecting an array of suburb objects
        suburbId  =  suburbId || '',
        suburbName = suburbName || '',
        state=state ||'', 
