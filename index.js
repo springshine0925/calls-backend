@@ -111,38 +111,22 @@ app.get('/api/tutors', async (req, res) => {
   // 1. Add/Update Tutors
   app.post('/api/tutors', async (req, res) => {
     try {
-        let {
-            tutorId,
-            name,
-            regDate,
-            primarySuburb,
-            suburbs,
-            summary,
-            exp1,
-            exp2,
-            exp3,
-            expSummary,
-            highlights,
-            experience,
-            education,
-            skills,
-            languages
-        } = req.body; // Expecting a single tutor object
-        tutorId = tutorId ? tutorId: '',
-        name = name ? name : '',
-        regDate = regDate? new Date(regDate) : new Date(),
-        primarySuburb = primarySuburb? primarySuburb : 0,
-        suburbs= suburbs ? suburbs : '',
-        summary = summary ? summary : '',
-        exp1 = exp1 ? exp1 : 0,
-        exp2= exp2 ? exp2 : 0,
-        exp3 = exp3 ? exp3 : 0,
-        expSummary = expSummary ? expSummary: 0,
-        highlights = highlights? highlights : '',
-        experience = experience ? experience: '',
-        education = education ? education : '',
-        skills =  skills ? skills : '',
-        languages = languages ? languages : ''
+
+       const tutorId = req.body.tutorId ? req.body.tutorId: ''
+       const name = req.body.name ? req.body.name : ''
+       const  regDate = req.body.regDate? new Date(req.body.regDate) : new Date()
+       const primarySuburb = req.body.primarySuburb? req.body.primarySuburb : 0
+       const suburbs= req.body.suburbs ? req.body.suburbs : ''
+       const summary = req.body.summary ? req.body.summary : ''
+       const  exp1 = req.body.exp1 ? req.body.exp1 : 0
+       const  exp2= req.body.exp2 ? req.body.exp2 : 0
+       const  exp3 = req.body.exp3 ? req.body.exp3 : 0
+       const  expSummary = req.body.expSummary ? req.body.expSummary: 0
+       const  highlights = req.body.highlights? req.body.highlights : ''
+       const  experience = req.body.experience ? req.body.experience: ''
+       const  education = req.body.education ? req.body.education : ''
+       const  skills =  req.body.skills ? req.body.skills : ''
+       const  languages = req.body.languages ? req.body.languages : ''
 
         if (tutorId) {
             // Update existing tutor
@@ -160,7 +144,7 @@ app.get('/api/tutors', async (req, res) => {
 
         // Fetch and return the updated list of tutors
         const [updatedTutors] = await pool.query('SELECT * FROM tutors');
-        res.status(201).json(updatedTutors);
+        res.status(201).json();
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
