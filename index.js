@@ -111,44 +111,100 @@ app.get('/api/tutors', async (req, res) => {
   // 1. Add/Update Tutors
   app.post('/api/tutors', async (req, res) => {
     try {
-      const newTutors = req.body; // Expecting an array of tutor objects
-      for (const newTutor of newTutors) {
-          const { id, name, suburbId, properties } = newTutor;
-          if (id) {
-              // Update existing tutor
-              await pool.query('UPDATE tutors SET name = ?, suburbId = ?, properties = ? WHERE id = ?', [name, suburbId, properties, id]);
-          } else {
-              // Add new tutor
-              await pool.query('INSERT INTO tutors (name, suburbId, properties) VALUES (?, ?, ?)', [name, suburbId, properties]);
-          }
-      }
-      const [updatedTutors] = await pool.query('SELECT * FROM tutors');
-      res.status(201).json(updatedTutors);
-  } catch (error) {
-      res.status(500).json({ error: error.message });
-  }
-  });
+        const {
+            tutorId,
+            name,
+            regDate,
+            primarySuburb,
+            suburbs,
+            summary,
+            exp1,
+            exp2,
+            exp3,
+            expSummary,
+            highlights,
+            experience,
+            education,
+            skills,
+            languages
+        } = req.body; // Expecting a single tutor object
+        name = name || '',
+        regDate = regDate || '',
+        primarySuburb = primarySuburb || '',
+        suburbs= suburbs || '',
+        summary = summary || '',
+        exp1 = exp1 || '',
+        exp2= exp2 || '',
+        exp3 = exp3 || '',
+        expSummary = expSummary || '',
+        highlights = highlights || '',
+        experience = experience || '',
+        education = education || '',
+        skills =  skills || '',
+        languages = languages || ''
+
+        if (tutorId) {
+            // Update existing tutor
+            await pool.query(
+                'UPDATE tutors SET name = ?, regDate = ?, primarySuburb = ?, suburbs = ?, summary = ?, exp1 = ?, exp2 = ?, exp3 = ?, expSummary = ?, highlights = ?, experience = ?, education = ?, skills = ?, languages = ? WHERE tutorId = ?',
+                [name, regDate, primarySuburb, suburbs, summary, exp1, exp2, exp3, expSummary, highlights, experience, education, skills, languages]
+            );
+        } else {
+            // Add new tutor
+            const [result] = await pool.query(
+                'INSERT INTO tutors (name, regDate, primarySuburb, summary, exp1, exp2, exp3, expSummary, highlights, experience, education, skills, languages) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                [name, regDate, primarySuburb, summary, exp1, exp2, exp3, expSummary, highlights, experience, education, skills, languages]
+            );
+        }
+
+        // Fetch and return the updated list of tutors
+        const [updatedTutors] = await pool.query('SELECT * FROM tutors');
+        res.status(201).json(updatedTutors);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
   
   // 2. Add/Update Suburbs
   app.post('/api/suburbs', async (req, res) => {
     try {
-      const newSuburbs = req.body; // Expecting an array of suburb objects
-      for (const newSuburb of newSuburbs) {
-          const { id, name } = newSuburb;
-          if (id) {
-              // Update existing suburb
-              await pool.query('UPDATE suburbs SET name = ? WHERE id = ?', [name, id]);
-          } else {
-              // Add new suburb
-              await pool.query('INSERT INTO suburbs (name) VALUES (?)', [name]);
-          }
-      }
-      const [updatedSuburbs] = await pool.query('SELECT * FROM suburbs');
-      res.status(201).json(updatedSuburbs);
-  } catch (error) {
-      res.status(500).json({ error: error.message });
-  }
-  });
+      const { suburbId, suburbName, state, description, rank1, rank2, tutors1, tutors2, data1, featuredTutor, summaryHighlight, lessonNotes, imageUrl } = req.body; // Expecting an array of suburb objects
+       suburbName = suburbName || '',
+       state=state ||'', 
+       description = description || '', 
+       rank1 = rank1 || '', 
+       rank2 = rank2 || '', 
+       tutors1 = tutors1 || '', 
+       tutors2 = tutors2 || '', 
+       data1 =  data1 || '', 
+       featuredTutor = featuredTutor || '', 
+       summaryHighlight = summaryHighlight || summaryHighlight, 
+       lessonNotes = lessonNotes || '', 
+       imageUrl = imageUrl || ''
+
+         if (suburbId) {
+                // Update existing suburb
+                await pool.query(
+                    'UPDATE suburbs SET suburbName = ?, state = ?, description = ?, rank1 = ?, rank2 = ?, tutors1 = ?, tutors2 = ?, data1 = ?, featuredTutor = ?, summaryHighlight = ?, lessonNotes = ?, imageUrl = ? WHERE suburbId = ?',
+                    [suburbName, state, description, rank1, rank2, tutors1, tutors2, data1, featuredTutor, summaryHighlight, lessonNotes, imageUrl, suburbId]
+                );
+
+            } else {
+                // Add new suburb
+                const [result] = await pool.query(
+                    'INSERT INTO suburbs (suburbName, state, description, rank1, rank2, tutors1, tutors2, data1, featuredTutor, summaryHighlight, lessonNotes, imageUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                    [suburbName, state, description, rank1, rank2, tutors1, tutors2, data1, featuredTutor, summaryHighlight, lessonNotes, imageUrl]
+                );
+            }
+
+        // Fetch and return the updated list of suburbs
+        const [updatedSuburbs] = await pool.query('SELECT * FROM suburbs');
+        res.status(201).json(updatedSuburbs);
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
