@@ -42,7 +42,7 @@ app.get('/api/tutors', async (req, res) => {
         const queryParams = [];
 
         if (tutorIds.length) {
-            query += ' WHERE id IN (?)';
+            query += ' WHERE tutorId IN (?)';
             queryParams.push([tutorIds]);
         }
 
@@ -62,7 +62,7 @@ app.get('/api/tutors', async (req, res) => {
       const queryParams = [];
 
       if (suburbIds.length) {
-          query += ' WHERE id IN (?)';
+          query += ' WHERE suburbId IN (?)';
           queryParams.push([suburbIds]);
       }
 
