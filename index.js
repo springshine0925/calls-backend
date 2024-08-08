@@ -169,7 +169,7 @@ app.get('/api/tutors', async (req, res) => {
   // 2. Add/Update Suburbs
   app.post('/api/suburbs', async (req, res) => {
     try {
-      let { suburbId, suburbName, state, description, rank1, rank2, tutors1, tutors2, data1, featuredTutor, summaryHighlight, lessonNotes, imageUrl } = req.body; // Expecting an array of suburb objects
+      let { suburbId, suburbName, state, description, rank1, rank2, tutors1, tutors2, data1, featuredTutor, summaryHighlights, lessonNotes, imageUrl } = req.body; // Expecting an array of suburb objects
        suburbId  =  suburbId || '',
        suburbName = suburbName || '',
        state=state ||'', 
@@ -180,22 +180,22 @@ app.get('/api/tutors', async (req, res) => {
        tutors2 = tutors2 || 0, 
        data1 =  data1 || '', 
        featuredTutor = featuredTutor, 
-       summaryHighlight = summaryHighlight || summaryHighlight, 
+       summaryHighlights = summaryHighlights || '', 
        lessonNotes = lessonNotes || '', 
        imageUrl = imageUrl || ''
 
          if (suburbId) {
                 // Update existing suburb
                 await pool.query(
-                    'UPDATE suburbs SET suburbName = ?, state = ?, description = ?, rank1 = ?, rank2 = ?, tutors1 = ?, tutors2 = ?, data1 = ?, featuredTutor = ?, summaryHighlight = ?, lessonNotes = ?, imageUrl = ? WHERE suburbId = ?',
-                    [suburbName, state, description, rank1, rank2, tutors1, tutors2, data1, featuredTutor, summaryHighlight, lessonNotes, imageUrl, suburbId]
+                    'UPDATE suburbs SET suburbName = ?, state = ?, description = ?, rank1 = ?, rank2 = ?, tutors1 = ?, tutors2 = ?, data1 = ?, featuredTutor = ?, summaryHighlights = ?, lessonNotes = ?, imageUrl = ? WHERE suburbId = ?',
+                    [suburbName, state, description, rank1, rank2, tutors1, tutors2, data1, featuredTutor, summaryHighlights, lessonNotes, imageUrl, suburbId]
                 );
 
             } else {
                 // Add new suburb
                 const [result] = await pool.query(
-                    'INSERT INTO suburbs (suburbName, state, description, rank1, rank2, tutors1, tutors2, data1, featuredTutor, summaryHighlight, lessonNotes, imageUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                    [suburbName, state, description, rank1, rank2, tutors1, tutors2, data1, featuredTutor, summaryHighlight, lessonNotes, imageUrl]
+                    'INSERT INTO suburbs (suburbName, state, description, rank1, rank2, tutors1, tutors2, data1, featuredTutor, summaryHighlights, lessonNotes, imageUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                    [suburbName, state, description, rank1, rank2, tutors1, tutors2, data1, featuredTutor, summaryHighlights, lessonNotes, imageUrl]
                 );
             }
 
