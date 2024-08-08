@@ -6,7 +6,6 @@ const { createPool } = require('./db');
 
 const app = express();
 app.use(bodyParser.json());
-// Automatically allow cross-origin requests
 app.use(cors({ origin: true }));
 const port = process.env.PORT || 8080;
 
@@ -23,8 +22,8 @@ createPool()
 
 app.get('/', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT NOW() AS now');
-    res.json({msg: "connect successfully!", rows});
+    // const [rows] = await pool.query('SELECT NOW() AS now');
+    res.json({msg: "connect successfully!"});
   } catch (err) {
     console.error('Failed to query:', err);
     res.status(500).send('Failed to query database');
