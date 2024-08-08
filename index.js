@@ -6,6 +6,9 @@ const { createPool } = require('./db');
 
 const app = express();
 app.use(bodyParser.json());
+// app.use(express.urlencoded({ extended: true }));
+// Parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors({ origin: true }));
 const port = process.env.PORT || 8080;
 
