@@ -127,22 +127,22 @@ app.get('/api/tutors', async (req, res) => {
             education,
             skills,
             languages
-        } = req.body.data; // Expecting a single tutor object
-        tutorId = tutorId || '',
-        name = name || '',
-        regDate = new Date(regDate) || new Date.now(),
-        primarySuburb = primarySuburb || 0,
-        suburbs= suburbs || '',
-        summary = summary || '',
-        exp1 = exp1 || 0,
-        exp2= exp2 || 0,
-        exp3 = exp3 || 0,
-        expSummary = expSummary || 0,
-        highlights = highlights || '',
-        experience = experience || '',
-        education = education || '',
-        skills =  skills || '',
-        languages = languages || ''
+        } = req.body; // Expecting a single tutor object
+        tutorId = tutorId ? tutorId: '',
+        name = name ? name : '',
+        regDate = regDate? new Date(regDate) : new Date.now(),
+        primarySuburb = primarySuburb? primarySuburb : 0,
+        suburbs= suburbs ? suburbs : '',
+        summary = summary ? summary : '',
+        exp1 = exp1 ? exp1 : 0,
+        exp2= exp2 ? exp2 : 0,
+        exp3 = exp3 ? exp3 : 0,
+        expSummary = expSummary ? expSummary: 0,
+        highlights = highlights? highlights : '',
+        experience = experience ? experience: '',
+        education = education ? education : '',
+        skills =  skills ? skills : '',
+        languages = languages ? languages : ''
 
         if (tutorId) {
             // Update existing tutor
