@@ -127,11 +127,11 @@ app.get('/api/tutors', async (req, res) => {
             education,
             skills,
             languages
-        } = req.body; // Expecting a single tutor object
+        } = req.body.data; // Expecting a single tutor object
         tutorId = tutorId || '',
         name = name || '',
         regDate = new Date(regDate) || new Date.now(),
-        primarySuburb = primarySuburb,
+        primarySuburb = primarySuburb || 0,
         suburbs= suburbs || '',
         summary = summary || '',
         exp1 = exp1 || 0,
@@ -179,7 +179,7 @@ app.get('/api/tutors', async (req, res) => {
        tutors1 = tutors1 || 0, 
        tutors2 = tutors2 || 0, 
        data1 =  data1 || '', 
-       featuredTutor = featuredTutor, 
+       featuredTutor = featuredTutor|| 0, 
        summaryHighlights = summaryHighlights || '', 
        lessonNotes = lessonNotes || '', 
        imageUrl = imageUrl || ''
