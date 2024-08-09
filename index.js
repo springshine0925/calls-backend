@@ -99,7 +99,7 @@ app.get('/api/tutors', async (req, res) => {
     try {
       const { suburbId, fields } = req.query;
       let query = 'SELECT * FROM tutors';
-      const params = [suburbId];
+      const params = suburbId? [suburbId]:[];
   
       // Handle the `fields` parameter
       if (fields) {
