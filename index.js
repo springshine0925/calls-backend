@@ -97,8 +97,13 @@ app.get('/api/tutors', async (req, res) => {
   // 3. Get Tutors in a Suburb
   app.get('/api/suburb_tutors', async (req, res) => {
     try {
-      const { suburbId } = req.query;
-      const query = 'SELECT * FROM tutors WHERE primarySuburb = ?';
+      const { suburbId, fields } = req.query;
+      let query = 'SELECT * FROM tutors';
+      if (fields) {
+        const selectedFields = fields.split(',');
+        query = `SELECT ${selectedFields.join(', ')} FROM tutors`;
+      }
+       query += 'WHERE primarySuburb = ?';
       const [rows] = await pool.query(query, [suburbId]);
       res.json(rows);
     } catch (error) {
