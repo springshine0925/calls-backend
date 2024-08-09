@@ -131,7 +131,7 @@ app.get('/api/tutors', async (req, res) => {
 
        const tutorId = req.body.tutorId ? req.body.tutorId: ''
        const name = req.body.name ? req.body.name : ''
-       const  regDate = req.body.regDate? new Date(req.body.regDate) : new Date()
+       const regDate = req.body.regDate? new Date(req.body.regDate) : new Date()
        const primarySuburb = req.body.primarySuburb? req.body.primarySuburb : 0
        const suburbs= req.body.suburbs ? req.body.suburbs : ''
        const summary = req.body.summary ? req.body.summary : ''
@@ -154,8 +154,8 @@ app.get('/api/tutors', async (req, res) => {
         } else {
             // Add new tutor
             const [result] = await pool.query(
-                'INSERT INTO tutors (name, regDate, primarySuburb, summary, exp1, exp2, exp3, expSummary, highlights, experience, education, skills, languages) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                [name, regDate, primarySuburb, summary, exp1, exp2, exp3, expSummary, highlights, experience, education, skills, languages]
+                'INSERT INTO tutors (name, regDate, primarySuburb, suburbs, summary, exp1, exp2, exp3, expSummary, highlights, experience, education, skills, languages) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                [name, regDate, primarySuburb, suburbs, summary, exp1, exp2, exp3, expSummary, highlights, experience, education, skills, languages]
             );
         }
 
@@ -207,6 +207,53 @@ app.get('/api/tutors', async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
+});
+app.delete('/api/tutors/:tutorId', async (req, res) => {
+  try {
+    const tutorId = parseInt(req.params.tutorId);
+
+    if (isNaN(tutorId)) {
+      return res.status(400).json({ error: "Invalid Tutor ID" });
+    }
+
+    // Use a parameterized query to prevent SQL injection
+    const query = 'DELETE FROM tutors WHERE tutorId = ?';
+
+    // Execute the delete query with the provided tutorId
+    const [result] = await pool.query(query, [tutorId]);
+
+    if (result.affectedRows > 0) {
+      res.status(200).json({ message: `Tutor with ID ${tutorId} deleted successfully` });
+    } else {
+      res.status(404).json({ message: "Tutor not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+// Delete a single suburb
+app.delete('/api/suburbs/:suburbId', async (req, res) => {
+  try {
+    const suburbId = parseInt(req.params.suburbId);
+
+    if (isNaN(suburbId)) {
+      return res.status(400).json({ error: "Invalid suburb ID" });
+    }
+
+    // Use a parameterized query to prevent SQL injection
+    const query = 'DELETE FROM suburbs WHERE suburbId = ?';
+
+    // Execute the delete query with the provided suburbId
+    const [result] = await pool.query(query, [suburbId]);
+
+    if (result.affectedRows > 0) {
+      res.status(200).json({ message: `Suburb with ID ${suburbId} deleted successfully` });
+    } else {
+      res.status(404).json({ message: "Suburb not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 app.listen(port, () => {
