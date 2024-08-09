@@ -39,18 +39,27 @@ app.get('/', async (req, res) => {
 app.get('/api/tutors', async (req, res) => {
    
     try {
-        const { ids } = req.query; // Expecting a comma-separated list of IDs
-        const tutorIds = ids ? ids.split(',').map(id => parseInt(id)) : [];
+        const { ids, fields } = req.query; // Expecting a comma-separated list of IDs
+        // const tutorIds = ids ? ids.split(',').map(id => parseInt(id)) : [];
         let query = 'SELECT * FROM tutors';
-        const queryParams = [];
+        let params = [];
 
-        if (tutorIds.length) {
-            query += ' WHERE tutorId IN (?)';
-            queryParams.push([tutorIds]);
+        // Handle the `ids` parameter
+        if (ids) {
+          const idList = ids.split(',').map(Number);
+          query += ' WHERE tutorId IN (?)';
+          params.push(idList);
         }
 
-        const [rows] = await pool.query(query, queryParams);
-        res.json(rows);
+        // Handle the `fields` parameter
+      if (fields) {
+        const selectedFields = fields.split(',');
+        query = `SELECT ${selectedFields.join(', ')} FROM tutors`;
+      }
+
+      const [result] = await pool.query(query, params);
+      res.status(200).json(result);
+
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -59,14 +68,19 @@ app.get('/api/tutors', async (req, res) => {
   // 2. Get Suburbs
   app.get('/api/suburbs', async (req, res) => {
     try {
-      const { ids } = req.query; 
+      const { ids, fields } = req.query; 
       const suburbIds = ids ? ids.split(',').map(id => parseInt(id)) : [];
       let query = 'SELECT * FROM suburbs';
       const queryParams = [];
 
       if (suburbIds.length) {
           query += ' WHERE suburbId IN (?)';
-          queryParams.push([suburbIds]);
+          queryParams.push(suburbIds);
+      }
+       // Handle the `fields` parameter
+       if (fields) {
+        const selectedFields = fields.split(',');
+        query = `SELECT ${selectedFields.join(', ')} FROM suburbs`;
       }
 
       const [rows] = await pool.query(query, queryParams);
