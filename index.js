@@ -43,19 +43,22 @@ app.get('/api/tutors', async (req, res) => {
         // const tutorIds = ids ? ids.split(',').map(id => parseInt(id)) : [];
         let query = 'SELECT * FROM tutors';
         let params = [];
-
-        // Handle the `ids` parameter
-        if (ids) {
-          const idList = ids.split(',').map(Number);
-          query += ' WHERE tutorId IN (?)';
-          params.push(idList);
-        }
-
+        
         // Handle the `fields` parameter
       if (fields) {
         const selectedFields = fields.split(',');
         query = `SELECT ${selectedFields.join(', ')} FROM tutors`;
       }
+        // Handle the `ids` parameter
+    if (ids) {
+      const idList = ids.split(',').map(id => parseInt(id));
+      if (fields) {
+        query += ' WHERE tutorId IN (?)';
+      } else {
+        query = `SELECT * FROM tutors WHERE tutorId IN (?)`;
+      }
+      params.push(idList);
+    }
 
       const [result] = await pool.query(query, params);
       res.status(200).json(result);
@@ -72,15 +75,16 @@ app.get('/api/tutors', async (req, res) => {
       const suburbIds = ids ? ids.split(',').map(id => parseInt(id)) : [];
       let query = 'SELECT * FROM suburbs';
       const queryParams = [];
-
-      if (suburbIds.length) {
-          query += ' WHERE suburbId IN (?)';
-          queryParams.push(suburbIds);
-      }
+      
        // Handle the `fields` parameter
        if (fields) {
         const selectedFields = fields.split(',');
         query = `SELECT ${selectedFields.join(', ')} FROM suburbs`;
+      }
+
+      if (suburbIds.length) {
+        query += ' WHERE suburbId IN (?)';
+        queryParams.push(suburbIds);
       }
 
       const [rows] = await pool.query(query, queryParams);
@@ -94,7 +98,7 @@ app.get('/api/tutors', async (req, res) => {
   app.get('/api/suburb_tutors', async (req, res) => {
     try {
       const { suburbId } = req.query;
-      const query = 'SELECT * FROM tutors WHERE suburbId = ?';
+      const query = 'SELECT * FROM tutors WHERE primarySuburb = ?';
       const [rows] = await pool.query(query, [suburbId]);
       res.json(rows);
     } catch (error) {
@@ -132,7 +136,7 @@ app.get('/api/tutors', async (req, res) => {
        const tutorId = req.body.tutorId ? req.body.tutorId: ''
        const name = req.body.name ? req.body.name : ''
        const regDate = req.body.regDate? new Date(req.body.regDate) : new Date()
-       const primarySuburb = req.body.primarySuburb? req.body.primarySuburb : 0
+       const primarySuburb = req.body.primarySuburb
        const suburbs= req.body.suburbs ? req.body.suburbs : ''
        const summary = req.body.summary ? req.body.summary : ''
        const  exp1 = req.body.exp1 ? req.body.exp1 : 0
@@ -180,7 +184,7 @@ app.get('/api/tutors', async (req, res) => {
        tutors1 = tutors1 || 0, 
        tutors2 = tutors2 || 0, 
        data1 =  data1 || '', 
-       featuredTutor = featuredTutor|| 0, 
+       featuredTutor = featuredTutor, 
        summaryHighlights = summaryHighlights || '', 
        lessonNotes = lessonNotes || '', 
        imageUrl = imageUrl || ''
