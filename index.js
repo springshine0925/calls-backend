@@ -99,12 +99,18 @@ app.get('/api/tutors', async (req, res) => {
     try {
       const { suburbId, fields } = req.query;
       let query = 'SELECT * FROM tutors';
+      const params = [suburbId];
+  
+      // Handle the `fields` parameter
       if (fields) {
-        const selectedFields = fields.split(',');
+        const selectedFields = fields.split(',').map(field => field.trim());
         query = `SELECT ${selectedFields.join(', ')} FROM tutors`;
       }
-       query += 'WHERE primarySuburb = ?';
-      const [rows] = await pool.query(query, [suburbId]);
+  
+      // Add the `WHERE` clause for the `suburbId` parameter
+      query += ' WHERE primarySuburb = ?';
+  
+      const [rows] = await pool.query(query, params);
       res.json(rows);
     } catch (error) {
       res.status(500).json({ error: error.message });
