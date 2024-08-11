@@ -34,6 +34,8 @@ const clientOpts = await connector.getOptions({
     user: 'callsdb',
     password: 'callsdb',
     database: 'callsdb',
+    keepAliveInitialDelay: 10000, // 0 by default.
+    enableKeepAlive: true, // false by default.
     // socketPath: '/cloudsql/keen-boulder-410610:us-central1:calls',
     // waitForConnections: true,
     // connectTimeout: 5000
