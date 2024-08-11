@@ -22,6 +22,19 @@ createPool()
   .catch((err) => {
     console.error('Failed to create pool:', err);
   });
+  
+  app.use(async (req, res, next) => {
+    if (!pool) {
+      try {
+        pool = await createPool();
+        console.log('Reconnected to Cloud SQL');
+      } catch (err) {
+        console.error('Failed to reconnect:', err);
+        return res.status(500).send('Database connection error');
+      }
+    }
+    next();
+  });
 
 app.get('/', async (req, res) => {
   try {
