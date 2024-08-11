@@ -108,7 +108,7 @@ app.get('/api/tutors', async (req, res) => {
       }
   
       // Add the `WHERE` clause for the `suburbId` parameter
-      query += ' WHERE primarySuburb = ?';
+      query += ' WHERE primarySuburb IN (?)';
   
       const [rows] = await pool.query(query, params);
       res.json(rows);
