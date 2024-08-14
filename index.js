@@ -35,11 +35,31 @@ createPool()
     }
     next();
   });
+  
+
+  const reconnectInterval = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
+  setInterval(async () => {
+    try {
+      // Attempt to keep the connection pool alive by pinging the database
+      const connection = await pool.getConnection();
+      await connection.ping();
+      connection.release();
+      console.log('Database pool pinged to keep the connection alive');
+    } catch (error) {
+      console.error('Failed to ping the database:', error);
+      // Handle the error and recreate the pool if necessary
+      pool = await createPool();
+      console.log('Database pool recreated due to ping failure');
+    }
+  }, reconnectInterval);
+
+
 
 app.get('/', async (req, res) => {
   try {
     // const [rows] = await pool.query('SELECT NOW() AS now');
-    res.json({msg: "connect successfully!"});
+    pool = await createPool();
+    res.json({msg: "connect successfully!", pool: JSON.stringify(pool.config)});
   } catch (err) {
     console.error('Failed to query:', err);
     res.status(500).send('Failed to query database');
