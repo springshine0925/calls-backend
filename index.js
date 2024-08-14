@@ -41,9 +41,9 @@ createPool()
   setInterval(async () => {
     try {
       // Attempt to keep the connection pool alive by pinging the database
-      const connection = await pool.getConnection();
-      await connection.ping();
-      connection.release();
+      // const connection = await pool.getConnection();
+      await pool.ping();
+      pool.release();
       console.log('Database pool pinged to keep the connection alive');
     } catch (error) {
       console.error('Failed to ping the database:', error);
@@ -58,8 +58,8 @@ createPool()
 app.get('/', async (req, res) => {
   try {
     // const [rows] = await pool.query('SELECT NOW() AS now');
-    pool = await createPool();
-    res.json({msg: "connect successfully!", pool: JSON.stringify(pool.config)});
+    // pool = await createPool();
+    res.json({msg: "connect successfully!", pool: JSON.stringify(pool)});
   } catch (err) {
     console.error('Failed to query:', err);
     res.status(500).send('Failed to query database');
