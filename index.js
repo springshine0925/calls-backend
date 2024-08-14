@@ -37,7 +37,7 @@ createPool()
   });
   
 
-  const reconnectInterval = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
+  const reconnectInterval = 4 * 60 * 60 * 1000; // 6 hours in milliseconds
   setInterval(async () => {
     try {
       // Attempt to keep the connection pool alive by pinging the database
@@ -59,7 +59,7 @@ app.get('/', async (req, res) => {
   try {
     // const [rows] = await pool.query('SELECT NOW() AS now');
     // pool = await createPool();
-    res.json({msg: "connect successfully!", pool: JSON.stringify(pool)});
+    res.json({msg: "connect successfully!"});
   } catch (err) {
     console.error('Failed to query:', err);
     res.status(500).send('Failed to query database');
